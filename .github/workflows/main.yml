@@ -27,5 +27,5 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python bot.py
 
-        - name: Test internet access
+      - name: Test internet access
         run: python test_web.py
