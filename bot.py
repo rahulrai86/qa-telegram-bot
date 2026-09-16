@@ -30,6 +30,4 @@ response = requests.post(
 
 print(response.json())
 
-# Keep the application running
-while True:
-    time.sleep(60)
+
