@@ -278,8 +278,6 @@ caption = f"""🧪 QA Testing
 
 Professional QA/testing visual.
 
-📸 Photo by {photographer}
-
 🤖 Automation By Rahul
 """
 
