@@ -33,9 +33,11 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python bot.py
 
-      - name: Test QA Image Search
+      - name: Send QA Image to Telegram
         env:
-          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+         PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python qa_image_bot.py
 
       - name: Save article history
