@@ -144,7 +144,6 @@ caption = f"""🧪 QA Testing
 Professional QA/testing visual.
 
 📸 Photo by {photographer}
-🔗 Pexels: {photo_url}
 
 🤖 Automation By Rahul
 """
