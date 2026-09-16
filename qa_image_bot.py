@@ -1,55 +1,123 @@
+```python
 import os
-from openai import OpenAI
+import random
+import requests
 
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
+
+IMAGE_FILE = "qa_image.jpg"
+
+QA_TOPICS = [
+    "software testing",
+    "software tester",
+    "quality assurance",
+    "test automation",
+    "API testing",
+    "bug testing",
+    "software developer testing",
+    "computer programming testing",
+    "CI CD software",
+    "web application testing"
+]
 
 
-if not OPENAI_API_KEY:
-    raise Exception("OPENAI_API_KEY is not configured.")
+if not PEXELS_API_KEY:
+    raise Exception("PEXELS_API_KEY is not configured.")
 
 
-client = OpenAI(
-    api_key=OPENAI_API_KEY
+print("Starting QA image search...")
+
+
+# --------------------------------------------------
+# SELECT QA TOPIC
+# --------------------------------------------------
+
+topic = random.choice(QA_TOPICS)
+
+print(f"Selected QA topic: {topic}")
+
+
+# --------------------------------------------------
+# SEARCH PEXELS
+# --------------------------------------------------
+
+pexels_url = "https://api.pexels.com/v1/search"
+
+headers = {
+    "Authorization": PEXELS_API_KEY
+}
+
+params = {
+    "query": topic,
+    "orientation": "landscape",
+    "per_page": 10
+}
+
+
+response = requests.get(
+    pexels_url,
+    headers=headers,
+    params=params,
+    timeout=20
 )
 
-
-prompt = """
-Create a professional realistic editorial-style image about software quality assurance.
-
-Scene:
-A modern software testing team working in a technology office.
-A QA engineer is investigating a software defect using multiple monitors.
-The screens show realistic but generic software testing dashboards, test cases,
-logs, and application screens.
-
-Style:
-Photorealistic, professional technology photography,
-modern enterprise software environment,
-cinematic but natural lighting,
-high quality,
-clean composition,
-realistic people and computers.
-
-Important:
-Do not create an infographic.
-Do not create a presentation slide.
-Do not use large text.
-Do not include captions.
-Do not include logos.
-Do not include watermarks.
-The image should look like a professional technology article photograph.
-"""
+response.raise_for_status()
 
 
-print("Starting QA image generation...")
+data = response.json()
 
-result = client.images.generate(
-    model="gpt-image-2",
-    prompt=prompt,
-    size="1536x1024"
+photos = data.get("photos", [])
+
+
+if not photos:
+    raise Exception(
+        f"No images found for topic: {topic}"
+    )
+
+
+# --------------------------------------------------
+# SELECT IMAGE
+# --------------------------------------------------
+
+photo = random.choice(photos)
+
+photo_url = photo["url"]
+photographer = photo["photographer"]
+image_url = photo["src"]["large"]
+
+
+print(f"Selected image: {photo_url}")
+print(f"Photographer: {photographer}")
+print(f"Image URL: {image_url}")
+
+
+# --------------------------------------------------
+# DOWNLOAD IMAGE
+# --------------------------------------------------
+
+print("Downloading image...")
+
+
+image_response = requests.get(
+    image_url,
+    timeout=30
 )
 
-print("Image generated successfully.")
+image_response.raise_for_status()
 
-print(result)
+
+with open(IMAGE_FILE, "wb") as file:
+    file.write(image_response.content)
+
+
+print("Image downloaded successfully.")
+
+print(f"Saved image as: {IMAGE_FILE}")
+
+print(f"Topic: {topic}")
+print(f"Photographer: {photographer}")
+print(f"Pexels photo: {photo_url}")
+
+print("QA image search completed successfully.")
+```
