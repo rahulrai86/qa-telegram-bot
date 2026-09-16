@@ -35,20 +35,21 @@ jobs:
 
       - name: Send QA Image to Telegram
         env:
-         PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
-         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: python qa_image_bot.py
 
-      - name: Save article history
+      - name: Save bot history
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add posted_articles.json
+
+          git add posted_articles.json posted_images.json
 
           if git diff --cached --quiet; then
-            echo "No article history changes to commit."
+            echo "No history changes to commit."
           else
-            git commit -m "Update posted article history"
+            git commit -m "Update bot history"
             git push
           fi
