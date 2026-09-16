@@ -1,3 +1,4 @@
+```yaml
 name: QA Telegram Bot
 
 on:
@@ -37,6 +38,12 @@ jobs:
         run: |
           python bot.py
 
+      - name: Test QA Image Generation
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          python qa_image_bot.py
+
       - name: Save article history
         run: |
           git config --global user.name "github-actions[bot]"
@@ -50,3 +57,4 @@ jobs:
             git commit -m "Update posted article history"
             git push
           fi
+```
