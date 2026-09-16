@@ -1,5 +1,4 @@
 import os
-import time
 import requests
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -29,5 +28,3 @@ response = requests.post(
 )
 
 print(response.json())
-
-
