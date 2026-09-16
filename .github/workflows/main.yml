@@ -1,48 +1,81 @@
-name: QA Telegram Bot
+import requests
+import xml.etree.ElementTree as ET
+import re
 
-on:
-  workflow_dispatch:
-  schedule:
-    - cron: "0 * * * *"
+RSS_URL = "https://feeds.feedburner.com/softwaretestinghelp"
 
-permissions:
-  contents: write
 
-jobs:
-  send-qa-message:
-    runs-on: ubuntu-latest
+def find_image_url(article_url):
+    response = requests.get(
+        article_url,
+        timeout=20,
+        headers={
+            "User-Agent": "Mozilla/5.0"
+        }
+    )
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    response.raise_for_status()
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.x"
+    html = response.text
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
+    # Try to find the Open Graph image
+    match = re.search(
+        r'<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)',
+        html,
+        re.IGNORECASE
+    )
 
-      - name: Test internet access
-        run: python test_web.py
+    if match:
+        return match.group(1)
 
-      - name: Run QA Telegram Bot
-        env:
-          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python bot.py
+    # Try the reverse attribute order
+    match = re.search(
+        r'<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']',
+        html,
+        re.IGNORECASE
+    )
 
-      - name: Save article history
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+    if match:
+        return match.group(1)
 
-          git add posted_articles.json
+    return None
 
-          if git diff --cached --quiet; then
-            echo "No article history changes to commit."
-          else
-            git commit -m "Update posted article history"
-            git push
-          fi
+
+response = requests.get(
+    RSS_URL,
+    timeout=20
+)
+
+response.raise_for_status()
+
+root = ET.fromstring(response.content)
+
+channel = root.find("channel")
+
+if channel is None:
+    raise Exception("RSS channel not found")
+
+articles = channel.findall("item")
+
+print(f"Found {len(articles)} articles")
+
+# Test the first 5 articles
+for article in articles[:5]:
+
+    title = article.findtext(
+        "title",
+        default="No title"
+    )
+
+    link = article.findtext(
+        "link",
+        default="No link"
+    )
+
+    print("\n------------------------------")
+    print("TITLE:", title)
+    print("LINK:", link)
+
+    image_url = find_image_url(link)
+
+    print("IMAGE:", image_url)
