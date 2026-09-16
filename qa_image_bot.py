@@ -1,4 +1,3 @@
-```python
 import os
 import random
 import requests
@@ -29,19 +28,13 @@ if not PEXELS_API_KEY:
 print("Starting QA image search...")
 
 
-# --------------------------------------------------
-# SELECT QA TOPIC
-# --------------------------------------------------
-
+# Select a QA topic
 topic = random.choice(QA_TOPICS)
 
 print(f"Selected QA topic: {topic}")
 
 
-# --------------------------------------------------
-# SEARCH PEXELS
-# --------------------------------------------------
-
+# Search Pexels
 pexels_url = "https://api.pexels.com/v1/search"
 
 headers = {
@@ -76,10 +69,7 @@ if not photos:
     )
 
 
-# --------------------------------------------------
-# SELECT IMAGE
-# --------------------------------------------------
-
+# Select a random image
 photo = random.choice(photos)
 
 photo_url = photo["url"]
@@ -92,10 +82,7 @@ print(f"Photographer: {photographer}")
 print(f"Image URL: {image_url}")
 
 
-# --------------------------------------------------
-# DOWNLOAD IMAGE
-# --------------------------------------------------
-
+# Download image
 print("Downloading image...")
 
 
@@ -112,12 +99,8 @@ with open(IMAGE_FILE, "wb") as file:
 
 
 print("Image downloaded successfully.")
-
 print(f"Saved image as: {IMAGE_FILE}")
-
 print(f"Topic: {topic}")
 print(f"Photographer: {photographer}")
 print(f"Pexels photo: {photo_url}")
-
 print("QA image search completed successfully.")
-```
