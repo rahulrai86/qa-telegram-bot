@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 
 BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
@@ -8,7 +9,7 @@ message = """🤖 QA Telegram Bot
 
 Hello! 👋
 
-This is the first automated message from my cloud-hosted QA bot.
+This is an automated message from my cloud-hosted QA bot.
 
 🧪 Manual Testing
 🔌 API Testing
@@ -28,3 +29,7 @@ response = requests.post(
 )
 
 print(response.json())
+
+# Keep the application running
+while True:
+    time.sleep(60)
